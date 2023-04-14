@@ -1,0 +1,55 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "My Application"
+include 'app'
+include ':library1'
+gradle.addBuildListener(new BuildListener() {
+
+    void buildStarted(Gradle var1) {
+        println 'buildStarted()->开始构建'
+    }
+
+    void settingsEvaluated(Settings var1) {
+        println 'settingsEvaluated()->settings评估完成（settins.gradle中代码执行完毕）'
+        // var1.gradle.rootProject 这里访问Project对象时会报错，还未完成Project的初始化
+    }
+
+    void projectsLoaded(Gradle var1) {
+        println 'projectsLoaded()->项目结构加载完成（初始化阶段结束）'
+        println 'projectsLoaded()->初始化结束，可访问根项目：' + var1.gradle.rootProject
+    }
+
+    void projectsEvaluated(Gradle var1) {
+        println 'projectsEvaluated()->所有项目评估完成（配置阶段结束）'
+    }
+
+    void buildFinished(BuildResult var1) {
+        println 'buildFinished()->构建结束 '
+    }
+})
+if (file("local.properties").exists()) {
+    def properties = new Properties()
+    def inputStream = file("local.properties").newDataInputStream()
+    properties.load( inputStream )
+    def moduleName = properties.getProperty("moduleName")
+    def modulePath = properties.getProperty("modulePath")
+    if (moduleName != null && modulePath != null) {
+        include moduleName
+        project(moduleName).projectDir = file(modulePath)
+    }
+}
+
+include ':mylibrary1'
+include ':mylibrary2'

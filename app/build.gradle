@@ -1,0 +1,117 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.example.myapplication'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.example.myapplication"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+def startBuildTime
+def endBuildTime
+
+//配置完后，所有的task的拓扑图都已经生成好了
+//保证要找的task已经配置完毕
+this.afterEvaluate { Project project ->
+
+    //找到第一个执行的task
+    def preBuildTask = project.tasks.getByName('preBuild')
+    preBuildTask.doFirst {
+        startBuildTime = System.currentTimeMillis()
+        println 'the start time is:' + startBuildTime
+    }
+
+    //找到最后一个编译的build任务
+    def buildTask = project.tasks.getByName('build')
+    buildTask.doLast {
+        endBuildTime = System.currentTimeMillis()
+        println 'the build time is:' + (endBuildTime - startBuildTime)
+    }
+}
+//task myTask1  {
+//    println "doLast in task1"
+//}
+//
+//task myTask2  {
+//    println "doLast in task2"
+//}
+
+//task myTask3 {
+//    println "doLast in task3, this is old task"
+//}
+
+//task myTask3(description: "这是task3的描述", group: "myTaskGroup", dependsOn: [myTask1, myTask2], overwrite: false) {
+//    println "doLast in task3, this is new task"
+//}
+//this.tasks.create(name: 'helloTask2') {
+//    println 'i am helloTask 2.'
+//}
+//def startBuildTime, endBuildTime
+//this.afterEvaluate { Project project ->
+//    // 保证要找的task已经配置完毕
+//    def preBuildTask = project.tasks.getByName('preBuild') // 执行build任务时，第一个被执行的Task
+//    preBuildTask.doFirst {
+//        startBuildTime = System.currentTimeMillis()
+//    }
+//    def buildTask = project.tasks.getByName('build') // 执行build任务时，最后一个被执行的Task
+//    buildTask.doLast {
+//        endBuildTime = System.currentTimeMillis()
+//        println "the build time is: ${endBuildTime - startBuildTime}"
+//    }
+//}
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+//先定义一个普通的java类，包含2个属性
+//class Foo {
+//    int age
+//    String username
+//
+//    String toString() {
+//        return "name = ${username}, age = ${age}"
+//    }
+//}
+////创建一个名为 foo 的Extension
+//getExtensions().create("foo", Foo)
+//
+////配置Extension
+//foo {
+//    age = 30
+//    username = "hjy"
+//}
+//
+//task testExt {
+//    //能直接通过 project 获取到自定义的 Extension
+//    println project.foo
+//}
